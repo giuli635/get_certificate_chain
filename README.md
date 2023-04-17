@@ -1,5 +1,7 @@
 # Get Certificate Chain 🌐🔐
 
+[![PyTests](https://github.com/cdot65/get_certificate_chain/actions/workflows/tests.yml/badge.svg)](https://github.com/cdot65/get_certificate_chain/actions/workflows/tests.yml)
+
 This Python script retrieves the certificate chain from a website, allowing you to analyze and verify the SSL/TLS certificates of the website. This project is a custom fork of the [getCertificateChain project](https://github.com/TheScriptGuy/getCertificateChain), and the overwhelming majority of credit goes to [TheScriptGuy](https://github.com/TheScriptGuy).
 
 ## Table of Contents

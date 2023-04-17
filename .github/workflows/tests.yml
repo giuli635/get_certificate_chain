@@ -1,4 +1,4 @@
-name: Test
+name: PyTests
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
           $HOME/.local/bin/poetry install
 
       - name: Generate test certificate
-        working-directory: tests/test_data
+        working-directory: get_certificate_chain/tests/test_data
         run: |
           chmod +x generate_cert.sh
           ./generate_cert.sh

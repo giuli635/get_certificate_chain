@@ -91,17 +91,17 @@ downloader = SSLCertificateChainDownloader()
 downloader.run(args)
 ```
 
-![import](docs/images/import.png)
+![import](images/import.png)
 
 ### Command Line CLI
 
 To use the script from the command line, run the following command:
 
 ```bash
-python get_certificate_chain.py --domain www.google.com
+get-certificate-chain --domain www.google.com
 ```
 
-![CLI](docs/images/cli.png)
+![cli](images/cli.png)
 
 #### Arguments
 

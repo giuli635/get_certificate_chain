@@ -1,6 +1,6 @@
 import os
 import pytest
-from main import (
+from download import (
     SSLCertificateChainDownloader,
 )
 
@@ -31,18 +31,18 @@ def cert_data(root_ca_cert, server_cert):
     }
 
 
-def test_check_domain():
+def test_check_url():
     downloader = SSLCertificateChainDownloader()
 
     # Test without port
-    downloader.domain = "www.google.com"
-    domain = downloader.check_domain()
-    assert domain == {"hostname": "www.google.com", "port": 443}
+    downloader.url = "www.google.com"
+    url = downloader.check_url()
+    assert url == {"url": "www.google.com", "port": 443}
 
     # Test with port
-    downloader.domain = "www.google.com:8443"
-    domain = downloader.check_domain()
-    assert domain == {"hostname": "www.google.com", "port": 8443}
+    downloader.url = "www.google.com:8443"
+    url = downloader.check_url()
+    assert url == {"url": "www.google.com", "port": 8443}
 
 
 def test_normalize_subject():

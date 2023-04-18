@@ -21,7 +21,7 @@ This Python script retrieves the certificate chain from a website, allowing you 
 
 ## Requirements 📋
 
-- Python 3.10+
+- Python 3.9+
 - Poetry (optional) - [Python Poetry](https://python-poetry.org/docs/)
 
 ## Installation
@@ -58,24 +58,33 @@ To pass arguments into the object, you can use the `argparse` library:
 
 1. Import the argparse library.
 2. Import the SSLCertificateChainDownloader object from the package.
-3. Create an argument parser with a description.
-4. Add your arguments.
-5. Parse the arguments.
-6. Create an instance of the SSLCertificateChainDownloader object.
-7. Run the downloader object with the parsed arguments.
+3. Create a python dictionary with the "url" key and value of the domain.
+4. Create an instance of the SSLCertificateChainDownloader object.
+5. Run the downloader object with the parsed arguments.
 
 ```python
-from get_certificate_chain import SSLCertificateChainDownloader
+from get_certificate_chain.download import SSLCertificateChainDownloader
 
 downloader = SSLCertificateChainDownloader()
 # Use the downloader object for your needs
 ```
 
-To pass arguments into the object, you can use the `argparse` library:
+You can pass the arguments directly into the object:
+
+```python
+from get_certificate_chain.download import SSLCertificateChainDownloader
+
+downloader = SSLCertificateChainDownloader()
+downloader.run({'url': 'www.google.com'})
+```
+
+![import](images/import.png)
+
+Or pass you can use the `argparse` library to parse the arguments:
 
 ```python
 import argparse
-from get_certificate_chain import SSLCertificateChainDownloader
+from get_certificate_chain.download import SSLCertificateChainDownloader
 
 # Add your arguments
 args = parser.parse_args()
@@ -84,31 +93,20 @@ downloader = SSLCertificateChainDownloader()
 downloader.run(args)
 ```
 
-Or pass the arguments directly into the object:
-
-```python
-from get_certificate_chain import SSLCertificateChainDownloader
-args = {'domain': 'www.google.com'}
-downloader = SSLCertificateChainDownloader()
-downloader.run(args)
-```
-
-![import](images/import.png)
-
 ### Command Line CLI
 
 To use the script from the command line, run the following command:
 
 ```bash
-get-certificate-chain --domain www.google.com
+get-certificate-chain --url www.google.com
 ```
 
 ![cli](images/cli.png)
 
 #### Arguments
 
-- `--domain`: The domain:port pair that the script should connect to. Defaults to www.google.com:443.
-- `--rm-ca-files`: Remove the certificate files in the current working directory (*.crt, *.pem).
+- `--url`: The url:port pair that the script should connect to. Defaults to www.google.com:443.
+- `--rm-ca-files`: Remove the certificate files in the current working directory (`*.crt`, `*.pem`).
 - `--get-ca-cert-pem`: Get cacert.pem from the curl.se website to help find Root CA.
 
 ## Contributing

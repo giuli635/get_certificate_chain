@@ -163,3 +163,4 @@ cython_debug/
 **/__pycache__
 .vscode
 previous.py
+.DS_Store

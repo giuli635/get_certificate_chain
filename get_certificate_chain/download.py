@@ -17,6 +17,7 @@ import socket
 import sys
 from typing import Any, Dict, List, Union
 from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
 
 # Third-party library imports
 import argparse
@@ -25,7 +26,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509.oid import ExtensionOID
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 CERT_CHAIN = []
 
 # Configure logging
@@ -35,7 +36,7 @@ logging.basicConfig(
 
 
 # parse arguments
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """
     Parse command line arguments.
 
@@ -58,10 +59,10 @@ def parse_arguments():
         help="Get cacert.pem from curl.se website to help find Root CA.",
     )
     parser.add_argument(
-        "--domain",
-        dest="domain",
+        "--url",
+        dest="url",
         default="www.google.com",
-        help="The hostname to connect to. (default: %(default)s)",
+        help="The url to connect to. (default: %(default)s)",
     )
     return parser.parse_args()
 
@@ -100,25 +101,25 @@ class SSLCertificateChainDownloader:
             out_file.write(data)
         logging.info("Downloaded %s to %s", cacert_pem_url, cacert_pem_file)
 
-    def check_domain(self) -> Dict[str, Any]:
+    def check_url(self) -> Dict[str, Any]:
         """
-        Check and parse the domain provided by the user.
+        Check and parse the url provided by the user.
 
         Args:
-            domain (str): The domain provided by the user.
+            url (str): The url provided by the user.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the hostname and port.
+            Dict[str, Any]: A dictionary containing the url and port.
         """
-        hostname, _, port = self.domain.partition(":")
-        return {"hostname": hostname, "port": int(port) if port else 443}
+        url, _, port = self.url.partition(":")
+        return {"url": url, "port": int(port) if port else 443}
 
-    def get_certificate(self, hostname: str, port: int) -> x509.Certificate:
+    def get_certificate(self, url: str, port: int) -> x509.Certificate:
         """
         Connect to a server and retrieve the SSL certificate.
 
         Args:
-            hostname (str): The hostname to connect to.
+            url (str): The url to connect to.
             port (int): The port to connect to.
 
         Returns:
@@ -126,24 +127,24 @@ class SSLCertificateChainDownloader:
         """
         try:
             context = ssl.create_default_context()
-            with socket.create_connection((hostname, port)) as sock:
-                with context.wrap_socket(sock, server_hostname=hostname) as ssl_socket:
+            with socket.create_connection((url, port)) as sock:
+                with context.wrap_socket(sock, server_hostname=url) as ssl_socket:
                     cert_pem = ssl.DER_cert_to_PEM_cert(ssl_socket.getpeercert(True))
                     cert = x509.load_pem_x509_certificate(
                         cert_pem.encode(), default_backend()
                     )
             return cert
         except ConnectionRefusedError:
-            print(f"Connection refused to {hostname}:{port}")
+            logging.error("Connection refused to %s:%s", url, port)
             sys.exit(1)
         except ssl.SSLError as e:
-            print(f"SSL error: {e}")
+            logging.error("SSL error: %s", e)
             sys.exit(1)
         except socket.timeout:
-            print(f"Connection timed out to {hostname}:{port}")
+            logging.error("Connection timed out to %s:%s", url, port)
             sys.exit(1)
         except socket.gaierror:
-            print(f"Hostname could not be resolved: {hostname}")
+            logging.error("Hostname could not be resolved: %s", url)
             sys.exit(1)
 
     def normalize_subject(self, subject: str) -> str:
@@ -234,7 +235,7 @@ class SSLCertificateChainDownloader:
                     ssl_certificate.encode("ascii"), default_backend()
                 )
                 return cert
-        except Exception:
+        except (HTTPError, URLError):
             return None
 
     def return_cert_aia_list(self, ssl_certificate: x509.Certificate) -> list:
@@ -346,7 +347,7 @@ class SSLCertificateChainDownloader:
             else:
                 index += 1
 
-        print(f"Number of Root CA's loaded: {len(ca_root_store)}")
+        logging.info("Number of Root CAs loaded: %d", len(ca_root_store))
         return ca_root_store
 
     def walk_the_chain(
@@ -410,15 +411,15 @@ class SSLCertificateChainDownloader:
 
     def run(self, args: Union[argparse.Namespace, dict]):
         if isinstance(args, argparse.Namespace):
-            self.domain = args.domain
+            self.url = args.url
         elif isinstance(args, dict):
-            self.domain = args.get("domain")
+            self.url = args.get("url")
         else:
             raise ValueError(
                 "Invalid argument type. Expected argparse.Namespace or dict."
             )
 
-        self.parsed_domain = self.check_domain()
+        self.parsed_url = self.check_url()
 
         if isinstance(args, argparse.Namespace):
             remove_ca_files = args.remove_ca_files
@@ -434,7 +435,7 @@ class SSLCertificateChainDownloader:
             self.get_ca_cert_pem()
 
         ssl_certificate = self.get_certificate(
-            self.parsed_domain["hostname"], self.parsed_domain["port"]
+            self.parsed_url["url"], self.parsed_url["port"]
         )
 
         aia = self.return_cert_aia(ssl_certificate)

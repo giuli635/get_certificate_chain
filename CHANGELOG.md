@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2023-04-18
+
+### Version 0.1.3
+
+* renamed script to `download` to help with imports
+* parse_args now uses strong typing
+* added exceptions for urllib errors
+* removed remaining print statements
+* relax on python version requirements
+* change `--domain` to `--url` to allow for more flexibility
+
 ## 2023-04-17
 
 ### Version 0.1.2

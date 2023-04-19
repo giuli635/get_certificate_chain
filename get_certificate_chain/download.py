@@ -25,7 +25,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509.oid import ExtensionOID
 
-VERSION = "0.1.6"
+VERSION = "0.1.7"
 CERT_CHAIN = []
 
 
@@ -499,7 +499,6 @@ class SSLCertificateChainDownloader:
 
         if get_ca_cert_pem:
             self.get_cacert_pem()
-            return
 
         ssl_certificate = self.get_certificate(
             self.parsed_url["host"], self.parsed_url["port"]

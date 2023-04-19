@@ -2,6 +2,11 @@
 
 ## 2023-04-19
 
+### Version 0.1.5
+
+* Refactored the normalize_subject method to use a list comprehension.
+* Changed the check_url method to a static method since it doesn't use instance variables.
+
 ### Version 0.1.4
 
 * change `--url` to `--host` to align with TLS spec

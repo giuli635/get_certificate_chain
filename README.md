@@ -93,6 +93,15 @@ downloader = SSLCertificateChainDownloader()
 downloader.run(args)
 ```
 
+You may also specify an output directory when creating an instance of the class:
+
+```python
+from get_certificate_chain.download import SSLCertificateChainDownloader
+
+downloader = SSLCertificateChainDownloader(output_directory="/var/tmp")
+downloader.run({"host": "www.google.com"})
+```
+
 ### Command Line CLI
 
 To use the script from the command line, run the following command:

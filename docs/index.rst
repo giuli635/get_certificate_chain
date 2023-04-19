@@ -12,7 +12,7 @@ This Python script retrieves the certificate chain from a website, allowing you 
 Requirements 📋
 ---------------
 
-- Python 3.10+
+- Python 3.9+
 - Poetry (optional) - `Python Poetry <https://python-poetry.org/docs/>`_
 
 Installation
@@ -50,29 +50,13 @@ Import into script
 
 To use the package in your script, simply import the package and create an instance of the `SSLCertificateChainDownloader` object.
 
-To pass arguments into the object, you can use the `argparse` library:
-
-1. Import the argparse library.
-2. Import the SSLCertificateChainDownloader object from the package.
-3. Create an argument parser with a description.
-4. Add your arguments.
-5. Parse the arguments.
-6. Create an instance of the SSLCertificateChainDownloader object.
-7. Run the downloader object with the parsed arguments.
-
-.. code-block:: python
-
-   from get_certificate_chain import SSLCertificateChainDownloader
-
-   downloader = SSLCertificateChainDownloader()
-   # Use the downloader object for your needs
 
 To pass arguments into the object, you can use the `argparse` library:
 
 .. code-block:: python
 
    import argparse
-   from get_certificate_chain import SSLCertificateChainDownloader
+   from get_certificate_chain.download import SSLCertificateChainDownloader
 
    # Add your arguments
    args = parser.parse_args()
@@ -84,10 +68,18 @@ Or pass the arguments directly into the object:
 
 .. code-block:: python
 
-   from get_certificate_chain import SSLCertificateChainDownloader
+   from get_certificate_chain.download import SSLCertificateChainDownloader
    args = {'host': 'www.google.com'}
    downloader = SSLCertificateChainDownloader()
    downloader.run(args)
+
+You may also specify an output directory when creating an instance of the class:
+
+.. code-block:: python
+
+   from get_certificate_chain.download import SSLCertificateChainDownloader
+   downloader = SSLCertificateChainDownloader(output_directory="/var/tmp")
+   downloader.run({"host": "www.google.com"})
 
 Command Line CLI
 ^^^^^^^^^^^^^^^^

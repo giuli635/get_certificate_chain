@@ -7,6 +7,7 @@
 * change `--url` to `--host` to align with TLS spec
 * added `--output-dir` to allow for custom output directory
 * added `--log-level` to allow for custom logging level
+* fixed optional `--get-ca-cert-pem` and `--rm-ca-files` from continuing the full script after execution
 
 ## 2023-04-18
 

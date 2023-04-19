@@ -8,7 +8,6 @@ and save them as PEM files as well.
 
 """
 # Standard library imports
-import glob
 import os
 import logging
 import re
@@ -76,17 +75,27 @@ def parse_arguments() -> argparse.Namespace:
 
 
 class SSLCertificateChainDownloader:
-    def __init__(self):
+    def __init__(self, output_directory: str = None):
         self.cert_chain = []
+        self._output_directory = output_directory
+
+    @property
+    def output_directory(self) -> str:
+        return self._output_directory if self._output_directory else "."
 
     def remove_cacert_pem(self):
         """
         Remove certificate files from the current directory.
         """
-        for crt_file in glob.glob("*.crt"):
-            os.remove(crt_file)
-        for pem_file in glob.glob("*.pem"):
-            os.remove(pem_file)
+        logging.info("Removing certificate files from current directory.")
+
+        output_directory = self.output_directory if self.output_directory else "."
+
+        for filename in os.listdir(output_directory):
+            if filename.endswith(".crt") or filename == "cacert.pem":
+                filepath = os.path.join(output_directory, filename)
+                os.remove(filepath)
+                logging.info(f"Removed {filename}")
 
     def get_cacert_pem(self):
         """
@@ -199,7 +208,7 @@ class SSLCertificateChainDownloader:
         Args:
             certificate_chain (List[x509.Certificate]): The certificate chain to write to files.
         """
-        os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(self.output_directory, exist_ok=True)
         for counter, certificate_item in enumerate(certificate_chain):
             cert_subject = certificate_item.subject.rfc4514_string()
             normalized_subject = self.normalize_subject(cert_subject)
@@ -207,7 +216,7 @@ class SSLCertificateChainDownloader:
                 f"{len(certificate_chain) - 1 - counter}-{normalized_subject}.crt"
             )
             ssl_certificate_filepath = os.path.join(
-                output_dir, ssl_certificate_filename
+                self.output_directory, ssl_certificate_filename
             )
             self.save_ssl_certificate(certificate_item, ssl_certificate_filepath)
 
@@ -425,14 +434,8 @@ class SSLCertificateChainDownloader:
 
     def run(self, args: Union[argparse.Namespace, dict]):
         if isinstance(args, argparse.Namespace):
-            get_ca_cert_pem = args.get_ca_cert_pem
-            output_dir = args.output_dir
-            remove_ca_files = args.remove_ca_files
             self.host = args.host
         elif isinstance(args, dict):
-            get_ca_cert_pem = args.get("get_ca_cert_pem")
-            output_dir = args.get("output_dir")
-            remove_ca_files = args.get("remove_ca_files")
             self.host = args.get("host")
         else:
             raise ValueError(
@@ -441,11 +444,20 @@ class SSLCertificateChainDownloader:
 
         self.parsed_url = self.check_url()
 
+        if isinstance(args, argparse.Namespace):
+            remove_ca_files = args.remove_ca_files
+            get_ca_cert_pem = args.get_ca_cert_pem
+        else:
+            remove_ca_files = args.get("remove_ca_files")
+            get_ca_cert_pem = args.get("get_ca_cert_pem")
+
         if remove_ca_files:
-            self.remove_ca_files()
+            self.remove_cacert_pem()
+            return
 
         if get_ca_cert_pem:
-            self.get_ca_cert_pem()
+            self.get_cacert_pem()
+            return
 
         ssl_certificate = self.get_certificate(
             self.parsed_url["host"], self.parsed_url["port"]
@@ -463,7 +475,7 @@ class SSLCertificateChainDownloader:
 
         self.walk_the_chain(ssl_certificate, 1, max_depth=4)
 
-        self.write_chain_to_file(self.cert_chain, output_dir)
+        self.write_chain_to_file(self.cert_chain)
 
         logging.info("Certificate chain downloaded and saved.")
 
@@ -483,7 +495,7 @@ def main() -> None:
         level=log_level, format="%(asctime)s [%(levelname)s] %(message)s"
     )
 
-    downloader = SSLCertificateChainDownloader()
+    downloader = SSLCertificateChainDownloader(output_directory=args.output_dir)
     downloader.run(args)
 
 

@@ -14,7 +14,7 @@ import re
 import ssl
 import socket
 import sys
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 
@@ -25,12 +25,12 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509.oid import ExtensionOID
 
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 CERT_CHAIN = []
 
 
 # parse arguments
-def parse_arguments() -> argparse.Namespace:
+def parse_arguments(args: Optional[List[str]] = None) -> argparse.Namespace:
     """
     Parse command line arguments.
 
@@ -41,16 +41,16 @@ def parse_arguments() -> argparse.Namespace:
         description="Export security rules and associated Security Profile Groups to a CSV file."
     )
     parser.add_argument(
-        "--rm-ca-files",
-        dest="remove_ca_files",
-        action="store_true",
-        help="Remove the cert files in current directory (*.crt, *.pem).",
-    )
-    parser.add_argument(
         "--get-ca-cert-pem",
         dest="get_ca_cert_pem",
         action="store_true",
         help="Get cacert.pem from curl.se website to help find Root CA.",
+    )
+    parser.add_argument(
+        "--host",
+        dest="host",
+        default="www.google.com",
+        help="The host to connect to. (default: %(default)s)",
     )
     parser.add_argument(
         "--log-level",
@@ -66,10 +66,10 @@ def parse_arguments() -> argparse.Namespace:
         help="The output directory for the certificate chain files. (default: current directory)",
     )
     parser.add_argument(
-        "--host",
-        dest="host",
-        default="www.google.com",
-        help="The host to connect to. (default: %(default)s)",
+        "--rm-ca-files",
+        dest="remove_ca_files",
+        action="store_true",
+        help="Remove the cert files in current directory (*.crt, *.pem).",
     )
     return parser.parse_args()
 
@@ -118,7 +118,8 @@ class SSLCertificateChainDownloader:
             out_file.write(data)
         logging.info("Downloaded %s to %s", cacert_pem_url, cacert_pem_file)
 
-    def check_url(self) -> Dict[str, Any]:
+    @staticmethod
+    def check_url(host: str) -> Dict[str, Any]:
         """
         Check and parse the host provided by the user.
 
@@ -128,7 +129,7 @@ class SSLCertificateChainDownloader:
         Returns:
             Dict[str, Any]: A dictionary containing the host and port.
         """
-        host, _, port = self.host.partition(":")
+        host, _, port = host.partition(":")
         return {"host": host, "port": int(port) if port else 443}
 
     def get_certificate(self, host: str, port: int) -> x509.Certificate:
@@ -442,7 +443,7 @@ class SSLCertificateChainDownloader:
                 "Invalid argument type. Expected argparse.Namespace or dict."
             )
 
-        self.parsed_url = self.check_url()
+        self.parsed_url = SSLCertificateChainDownloader.check_url(self.host)
 
         if isinstance(args, argparse.Namespace):
             remove_ca_files = args.remove_ca_files

@@ -35,14 +35,14 @@ def test_check_url():
     downloader = SSLCertificateChainDownloader()
 
     # Test without port
-    downloader.url = "www.google.com"
-    url = downloader.check_url()
-    assert url == {"url": "www.google.com", "port": 443}
+    downloader.host = "www.google.com"
+    host = downloader.check_url()
+    assert host == {"host": "www.google.com", "port": 443}
 
     # Test with port
-    downloader.url = "www.google.com:8443"
-    url = downloader.check_url()
-    assert url == {"url": "www.google.com", "port": 8443}
+    downloader.host = "www.google.com:8443"
+    host = downloader.check_url()
+    assert host == {"host": "www.google.com", "port": 8443}
 
 
 def test_normalize_subject():

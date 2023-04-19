@@ -25,7 +25,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509.oid import ExtensionOID
 
-VERSION = "0.1.5"
+VERSION = "0.1.6"
 CERT_CHAIN = []
 
 
@@ -380,6 +380,25 @@ class SSLCertificateChainDownloader:
         depth: int,
         max_depth: int = 4,
     ):
+        """
+        Recursively walk the certificate chain to gather all intermediate and root certificates.
+
+        This method takes the SSL certificate, its depth in the certificate chain, and the maximum depth
+        allowed for the chain as arguments. It uses the Authority Key Identifier (AKI) and Subject Key
+        Identifier (SKI) to match and fetch the next certificate in the chain. The method also tries
+        to match the root certificate with a pre-existing root CA store if the AIA extension is not
+        available in the provided certificate.
+
+        Args:
+            ssl_certificate (x509.Certificate): The current SSL certificate being processed.
+            depth (int): The depth of the current SSL certificate in the chain.
+            max_depth (int, optional): The maximum depth allowed for the certificate chain. Defaults to 4.
+
+        Raises:
+            SystemExit: If a certificate cannot be retrieved, if a certificate doesn't have the AIA
+                        extension, or if the root CA is not found in the pre-existing root CA store.
+        """
+
         if depth <= max_depth:
             cert_aki = self.return_cert_aki(ssl_certificate)
             cert_ski = self.return_cert_ski(ssl_certificate)
@@ -433,7 +452,29 @@ class SSLCertificateChainDownloader:
                         logging.error("Root CA NOT found.")
                         sys.exit(1)
 
-    def run(self, args: Union[argparse.Namespace, dict]):
+    def run(self, args: Union[argparse.Namespace, dict]) -> Dict[str, List[str]]:
+        """
+        Main method that handles the execution of SSLCertificateChainDownloader based on the provided arguments.
+        This method takes care of processing input arguments, checking the URL, fetching and walking the certificate chain,
+        and saving the certificate chain files.
+
+        Args:
+            args (Union[argparse.Namespace, dict]): A set of input arguments either in the form of an argparse.Namespace object
+                                                or a dictionary. The expected keys/attributes are:
+                                                - host (str): The target host's URL.
+                                                - remove_ca_files (Optional[bool], default=False): If True, removes existing CA
+                                                    certificate files from the output directory.
+                                                - get_ca_cert_pem (Optional[bool], default=False): If True, fetches the CA
+                                                    certificate bundle in PEM format from the Mozilla website and saves it
+                                                    in the output directory.
+
+        Raises:
+            ValueError: If the provided 'args' is not an instance of argparse.Namespace or dict.
+
+        Returns:
+            Dict[str, List[str]]: A dictionary containing a key 'files' with a list of the paths of the saved certificate
+                                chain files in the output directory.
+        """
         if isinstance(args, argparse.Namespace):
             self.host = args.host
         elif isinstance(args, dict):
@@ -479,6 +520,14 @@ class SSLCertificateChainDownloader:
         self.write_chain_to_file(self.cert_chain)
 
         logging.info("Certificate chain downloaded and saved.")
+
+        return {
+            "files": [
+                os.path.join(self.output_directory, f)
+                for f in os.listdir(self.output_directory)
+                if f.endswith(".crt")
+            ]
+        }
 
 
 def main() -> None:

@@ -9,7 +9,7 @@
 project = "get_certificate_chain"
 copyright = "2023, Calvin Remsburg, Nolan Rumble"
 author = "Calvin Remsburg, Nolan Rumble"
-release = "0.1.5"
+release = "0.1.6"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

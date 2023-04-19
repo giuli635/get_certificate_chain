@@ -85,7 +85,7 @@ Or pass the arguments directly into the object:
 .. code-block:: python
 
    from get_certificate_chain import SSLCertificateChainDownloader
-   args = {'url': 'www.google.com'}
+   args = {'host': 'www.google.com'}
    downloader = SSLCertificateChainDownloader()
    downloader.run(args)
 
@@ -96,14 +96,17 @@ To use the script from the command line, run the following command:
 
 .. code-block:: bash
 
-   get-certificate-chain --url www.google.com
+   get-certificate-chain --host www.google.com
+   get-certificate-chain --rm-ca-files
 
 Arguments
 +++++++++
 
-- `--url`: The url:port pair that the script should connect to. Defaults to www.google.com:443.
+- `--host`: The host:port pair that the script should connect to. Defaults to www.google.com:443.
 - `--rm-ca-files`: Remove the certificate files in the current working directory (`*.crt`, `*.pem`).
 - `--get-ca-cert-pem`: Get cacert.pem from the curl.se website to help find Root CA.
+- `--log-level`: Set the log level. Defaults to INFO.
+- `--output-dir`: Set the output directory. Defaults to the current working directory.
 
 Contributing
 ------------

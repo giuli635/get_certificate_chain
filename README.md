@@ -58,7 +58,7 @@ To pass arguments into the object, you can use the `argparse` library:
 
 1. Import the argparse library.
 2. Import the SSLCertificateChainDownloader object from the package.
-3. Create a python dictionary with the "url" key and value of the domain.
+3. Create a python dictionary with the "host" key and value of the domain.
 4. Create an instance of the SSLCertificateChainDownloader object.
 5. Run the downloader object with the parsed arguments.
 
@@ -75,7 +75,7 @@ You can pass the arguments directly into the object:
 from get_certificate_chain.download import SSLCertificateChainDownloader
 
 downloader = SSLCertificateChainDownloader()
-downloader.run({'url': 'www.google.com'})
+downloader.run({'host': 'www.google.com'})
 ```
 
 ![import](images/import.png)
@@ -98,16 +98,24 @@ downloader.run(args)
 To use the script from the command line, run the following command:
 
 ```bash
-get-certificate-chain --url www.google.com
+get-certificate-chain --host www.google.com
 ```
 
 ![cli](images/cli.png)
 
+```bash
+get-certificate-chain --rm-ca-files
+```
+
+![cli](images/rm.png)
+
 #### Arguments
 
-- `--url`: The url:port pair that the script should connect to. Defaults to www.google.com:443.
+- `--host`: The host:port pair that the script should connect to. Defaults to www.google.com:443.
 - `--rm-ca-files`: Remove the certificate files in the current working directory (`*.crt`, `*.pem`).
-- `--get-ca-cert-pem`: Get cacert.pem from the curl.se website to help find Root CA.
+- `--get-ca-cert-pem`: Get cacert.pem from the chost.se website to help find Root CA.
+- `--log-level`: Set the log level. Defaults to INFO.
+- `--output-dir`: Set the output directory. Defaults to the current working directory.
 
 ## Contributing
 

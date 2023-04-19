@@ -2,6 +2,10 @@
 
 ## 2023-04-19
 
+### Version 0.1.7
+
+* --get-ca-cert-pem now default to prevent issues where certificate did not have AIA.
+
 ### Version 0.1.6
 
 * run method now returns a dictionary of the certificate chain files

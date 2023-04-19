@@ -2,6 +2,10 @@
 
 ## 2023-04-19
 
+### Version 0.1.6
+
+* run method now returns a dictionary of the certificate chain files
+
 ### Version 0.1.5
 
 * Refactored the normalize_subject method to use a list comprehension.

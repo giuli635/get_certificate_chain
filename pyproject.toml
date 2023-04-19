@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "get_certificate_chain"
-version = "0.1.5"
+version = "0.1.6"
 description = "Project to help use the breadcrumbs that are left by the certificate to build the chain and output it into files."
 authors = ["Calvin Remsburg <cremsburg.dev@gmail.com>", " TheScriptGuy <@nolanrumble>"]
 license = "MIT"

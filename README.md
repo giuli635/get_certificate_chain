@@ -1,8 +1,6 @@
 # Get Certificate Chain 🌐🔐
 
-[![PyTests](https://github.com/cdot65/get_certificate_chain/actions/workflows/tests.yml/badge.svg)](https://github.com/cdot65/get_certificate_chain/actions/workflows/tests.yml)
-
-This Python script retrieves the certificate chain from a website, allowing you to analyze and verify the SSL/TLS certificates of the website. This project is a custom fork of the [getCertificateChain project](https://github.com/TheScriptGuy/getCertificateChain), and the overwhelming majority of credit goes to [TheScriptGuy](https://github.com/TheScriptGuy).
+This Python script retrieves the certificate chain from a website, allowing you to analyze and verify the SSL/TLS certificates of the website. This project is a custom fork of the [get_certificate_chain project](https://github.com/cdot65/get_certificate_chain), most of the project, including this README was made by [TheScriptGuy](https://github.com/TheScriptGuy) and [cdot65](https://github.com/cdot65).
 
 ## Table of Contents
 
@@ -10,14 +8,6 @@ This Python script retrieves the certificate chain from a website, allowing you 
   - [Table of Contents](#table-of-contents)
   - [Requirements 📋](#requirements-)
   - [Installation](#installation)
-    - [PyPi](#pypi)
-    - [GitHub](#github)
-  - [Usage 🚀](#usage-)
-    - [Import into script](#import-into-script)
-    - [Command Line CLI](#command-line-cli)
-      - [Arguments](#arguments)
-  - [Contributing](#contributing)
-  - [License](#license)
 
 ## Requirements 📋
 
@@ -25,18 +15,6 @@ This Python script retrieves the certificate chain from a website, allowing you 
 - Poetry (optional) - [Python Poetry](https://python-poetry.org/docs/)
 
 ## Installation
-
-### PyPi
-
-To install the package from PyPi, simply run the appropriate command.
-
-```bash
-pip install get-certificate-chain
-```
-
-### GitHub
-
-To install from the GitHub repository, follow these steps:
 
 1. Clone the repository.
 2. Change the directory to the cloned repository.
@@ -47,110 +25,3 @@ git clone https://github.com/cdot65/get_certificate_chain.git
 cd get_certificate_chain
 pip install .
 ```
-
-## Usage 🚀
-
-### Import into script
-
-To use the package in your script, simply import the package and create an instance of the `SSLCertificateChainDownloader` object.
-
-To pass arguments into the object, you can use the `argparse` library:
-
-1. Import the argparse library.
-2. Import the SSLCertificateChainDownloader object from the package.
-3. Create a python dictionary with the "host" key and value of the domain.
-4. Create an instance of the SSLCertificateChainDownloader object.
-5. Run the downloader object with the parsed arguments.
-
-```python
-from get_certificate_chain.download import SSLCertificateChainDownloader
-
-downloader = SSLCertificateChainDownloader()
-# Use the downloader object for your needs
-```
-
-You can pass the arguments directly into the object:
-
-```python
-from get_certificate_chain.download import SSLCertificateChainDownloader
-
-downloader = SSLCertificateChainDownloader()
-downloader.run({'host': 'www.google.com'})
-```
-
-![import](images/import.png)
-
-Or pass you can use the `argparse` library to parse the arguments:
-
-```python
-import argparse
-from get_certificate_chain.download import SSLCertificateChainDownloader
-
-# Add your arguments
-args = parser.parse_args()
-
-downloader = SSLCertificateChainDownloader()
-downloader.run(args)
-```
-
-You may also specify an output directory when creating an instance of the class:
-
-```python
-from get_certificate_chain.download import SSLCertificateChainDownloader
-
-downloader = SSLCertificateChainDownloader(output_directory="/var/tmp")
-downloader.run({"host": "www.google.com"})
-```
-
-### Command Line CLI
-
-To use the script from the command line, run the following command:
-
-```bash
-get-certificate-chain --host www.google.com
-```
-
-![cli](images/cli.png)
-
-```bash
-get-certificate-chain --rm-ca-files
-```
-
-![cli](images/rm.png)
-
-#### Arguments
-
-- `--host`: The host:port pair that the script should connect to. Defaults to www.google.com:443.
-- `--rm-ca-files`: Remove the certificate files in the current working directory (`*.crt`, `*.pem`).
-- `--get-ca-cert-pem`: Get cacert.pem from the chost.se website to help find Root CA.
-- `--log-level`: Set the log level. Defaults to INFO.
-- `--output-dir`: Set the output directory. Defaults to the current working directory.
-
-## Contributing
-
-Contributions are welcome! To contribute, please follow these guidelines:
-
-1. Write tests for your code using `pytest`. Make sure your tests follow the standards set by the existing tests.
-2. Set up a virtual environment using `Poetry`. You can install Poetry by following the instructions at https://python-poetry.org/docs/#installation.
-
-To set up a new virtual environment for the project, run the appropriate command.
-
-```bash
-poetry install
-```
-
-To activate the virtual environment, run the appropriate command.
-
-```bash
-poetry shell
-```
-
-After making your changes and adding tests, ensure that all tests pass by running the appropriate command.
-
-```bash
-pytest
-```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

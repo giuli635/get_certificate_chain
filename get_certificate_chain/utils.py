@@ -27,7 +27,7 @@ def get_certificate(host: str, port: int) -> x509.Certificate:
 
 
 def ssl_certificate_to_string(ssl_certificate: x509.Certificate) -> str:
-    return ssl_certificate.public_bytes(encoding=serialization.Encoding.PEM)
+    return ssl_certificate.public_bytes(encoding=serialization.Encoding.PEM).decode("utf-8")
 
 
 def return_cert_aia(ssl_certificate: x509.Certificate) -> x509.Extensions:
@@ -256,6 +256,6 @@ def chain_to_string(cert_chain: List[x509.Certificate]) -> str:
     """
     chain_as_string = ""
     for cert in cert_chain:
-        chain_as_string += str(ssl_certificate_to_string(cert))
+        chain_as_string += ssl_certificate_to_string(cert)
 
     return chain_as_string

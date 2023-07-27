@@ -21,7 +21,7 @@ This Python script retrieves the certificate chain from a website, allowing you 
 3. Install the package using pip.
 
 ```bash
-git clone https://github.com/cdot65/get_certificate_chain.git
+git clone https://github.com/giuli635/get_certificate_chain.git
 cd get_certificate_chain
 pip install .
 ```
